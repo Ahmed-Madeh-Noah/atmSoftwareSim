@@ -16,5 +16,5 @@ The functions to be simulated are:
 3. Viewing Transaction History
 4. Cash Withdrawal
 5. Cash Deposit
-6. Money Transfer
+6. Balance Transfer
 7. Change PIN
