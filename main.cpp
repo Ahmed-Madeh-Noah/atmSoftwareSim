@@ -21,12 +21,13 @@ void edit_user_data(const string &username, const string &data, char index);
 void record(const string &username, const string &msg);
 
 int main() {
-    const string username = login(), constraints = "The amount must be a positive integer and made of the bills 50, 100, 200";
+    const string username = login(), constraints = "The amount must be a positive integer and made of bills 50, 100, 200\n";
     string otherUser;
     int numInput;
     printf("Welcome, %s\n", username.c_str());
     while (true) {
         string msg;
+        bool haveMoney = true;
         const int operation = main_menu(username);
         switch (operation) {
             case 0:
@@ -40,8 +41,11 @@ int main() {
                     if (!msg.empty())
                         printf(constraints.c_str());
                     numInput = input_number(msg);
-                    msg = "withdraw";
-                } while (numInput % 50 != 0);
+                    haveMoney = stoi(get_user_data(username, 2)) >= numInput;
+                    if (!haveMoney)
+                        printf("The amount you want to withdraw is larger than what you have in your account\n");
+                    msg = "the amount you want to withdraw";
+                } while (numInput % 50 != 0 || !haveMoney);
                 edit_user_data(username, '-' + to_string(numInput), 2);
                 printf("Successfully withdrew %d pounds", numInput);
                 break;
@@ -50,20 +54,39 @@ int main() {
                     if (!msg.empty())
                         printf(constraints.c_str());
                     numInput = input_number(msg);
-                    msg = "deposit";
+                    msg = "the amount you want to deposit";
                 } while (numInput % 50 != 0);
                 edit_user_data(username, to_string(numInput), 2);
                 printf("Successfully deposited %d pounds", numInput);
                 break;
             case 4:
-                msg = "transfer";
+                msg = "the amount you want to transfer";
                 do {
                     printf("Enter the username you want to transfer the money to:");
                     cin >> otherUser;
-                } while (username_index(otherUser) == -1);
+                    haveMoney = stoi(get_user_data(username, 2)) >= numInput;
+                    if (!haveMoney)
+                        printf("The amount you want to transfer is larger than what you have in your account\n");
+                    if (username == otherUser)
+                        printf("You can not transfer money to the same account\n");
+                } while (username_index(otherUser) == -1 || username == otherUser || !haveMoney);
                 numInput = input_number(msg);
                 edit_user_data(username, '-' + to_string(numInput), 2);
                 edit_user_data(otherUser, to_string(numInput), 2);
+                break;
+            case 5:
+                do {
+                    if (!msg.empty())
+                        printf("Make sure the PIN consists of only 4 digits");
+                    msg = "your new PIN";
+                    numInput = input_number(msg);
+                    msg = to_string(numInput);
+                    const auto msgLength = msg.length();
+                    if (msgLength == 3)
+                        for (char i = 0; i < 4 - msgLength; ++i)
+                            msg = '0' + msg;
+                } while (msg.length() != 4);
+                edit_user_data(username, msg, 1);
                 break;
             default:
                 printf("Good Bye, %s\n\n", username.c_str());
@@ -109,15 +132,17 @@ int main_menu(const string &username) {
                                   "Transfer Balance    ", "Change PIN          ",
                                   "Sign Out"};
     string printingMsg = "the number respective to the operation you want";
-    int operation;
+    int operation = 0;
     for (char i = 1; i < 8; ++i) {
         string msg = (i % 2 ? "\n" : "");
         printf("%s[%d] %s", msg.c_str(), i, operations[i - 1].c_str());
     }
     printf("\n");
     do {
+        if (operation == -1 || operation > 6)
+            printf("The choice value must be respective to an operation\n");
         operation = input_number(printingMsg) - 1;
-    } while (operation > 6);
+    } while (operation == -1 || operation > 6);
     record(username, operations[operation]);
     return operation;
 }
@@ -125,8 +150,6 @@ int main_menu(const string &username) {
 int input_number(string &msg) {
     string input;
     bool isInt = true;
-    if (msg == "withdraw" || msg == "deposit" || msg == "transfer")
-        msg = "the amount you want to " + msg + "(at least 50 pounds and in 50, 100, and 200 bills)";
     printf("Enter %s:", msg.c_str());
     cin >> input;
     for (char digit: input)
@@ -149,6 +172,6 @@ void edit_user_data(const string &username, const string &data, const char index
 
 void record(const string &username, const string &msg) {
     const auto timeNow = time(nullptr);
-    const string printingMsg = '"' + msg + "\" at time: " + string(ctime(&timeNow));
+    const string printingMsg = '"' + msg + "\" at: " + string(ctime(&timeNow));
     edit_user_data(username, get_user_data(username, 3) + printingMsg, 3);
 }
