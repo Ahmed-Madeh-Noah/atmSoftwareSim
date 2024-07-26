@@ -56,11 +56,14 @@ int main() {
                 printf("Successfully deposited %d pounds", numInput);
                 break;
             case 4:
+                msg = "transfer";
                 do {
                     printf("Enter the username you want to transfer the money to:");
                     cin >> otherUser;
                 } while (username_index(otherUser) == -1);
-                // the amount
+                numInput = input_number(msg);
+                edit_user_data(username, '-' + to_string(numInput), 2);
+                edit_user_data(otherUser, to_string(numInput), 2);
                 break;
             default:
                 printf("Good Bye, %s\n\n", username.c_str());
@@ -122,7 +125,7 @@ int main_menu(const string &username) {
 int input_number(string &msg) {
     string input;
     bool isInt = true;
-    if (msg == "withdraw" || msg == "deposit")
+    if (msg == "withdraw" || msg == "deposit" || msg == "transfer")
         msg = "the amount you want to " + msg + "(at least 50 pounds and in 50, 100, and 200 bills)";
     printf("Enter %s:", msg.c_str());
     cin >> input;
