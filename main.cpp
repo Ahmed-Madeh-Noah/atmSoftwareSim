@@ -3,64 +3,79 @@
 
 using namespace std;
 
-const string users[2][2] = {{"Ahmed", "0123"},
-                            {"Noah",  "9876"}};
+string users[2][4] = {{"Ahmed", "0123", "21000", ""},
+                      {"Noah",  "9876", "12500", ""}};
 
 string login();
 
-bool confirm_user_data(const string &userData, bool index);
+int username_index(const string &username);
+
+string get_user_data(const string &username, char index);
 
 int main_menu();
 
 int input_number(const string &msg);
 
+void edit_user_data(const string &username, const string &data, char index);
+
+void check_balance(const string &username);
+
 int main() {
     const string username = login();
-    if (!username.empty()) {
-        while (true) {
-            const int operation = main_menu();
-            printf("User: %s, Operation: %d\n", username.c_str(), operation);
-            break;
+    printf("Welcome, %s\n", username.c_str());
+    while (true) {
+        const int operation = main_menu();
+        switch (operation) {
+            case 0:
+                check_balance(username);
+                break;
+            case 1:
+                printf("%s", get_user_data(username, 3).c_str());
+                break;
+            case 2:
+                break;
+            default:
+                printf("Good Bye, %s\n\n", username.c_str());
+                return main();
         }
-    } else
-        return main();
-    return 0;
+    }
 }
 
 string login() {
     string username, password;
     char counter = 0;
-    bool userPresentFlag;
     do {
-        printf("You have %d trial/s to\nEnter your username:", 3 - counter);
+        printf("Enter your username:");
         cin >> username;
+    } while (username_index(username) == -1);
+    do {
+        printf("You have %d trial/s to\nEnter your password:", 3 - counter);
+        cin >> password;
         ++counter;
-        userPresentFlag = confirm_user_data(username, false);
-    } while (!userPresentFlag && counter < 3);
-    if (userPresentFlag) {
-        counter = 0;
-        do {
-            printf("You have %d trial/s to\nEnter your password:", 3 - counter);
-            cin >> password;
-            ++counter;
-            if (confirm_user_data(password, true))
-                return username;
-        } while (counter < 3);
-    }
-    return "";
+        if (password == get_user_data(username, 1))
+            return username;
+    } while (counter < 3);
+    return login();
 }
 
-bool confirm_user_data(const string &userData, const bool index) {
-    for (const auto &user: users)
-        if (user[index] == userData)
-            return true;
-    return false;
+int username_index(const string &username) {
+    int i = 0;
+    for (const auto &user: users) {
+        if (user[0] == username)
+            return i;
+        ++i;
+    }
+    return -1;
+}
+
+string get_user_data(const string &username, const char index) {
+    return users[username_index(username)][index];
 }
 
 int main_menu() {
-    const string operations[7] = {"Check Balance            ", "View Transactions History",
-                                  "Withdraw Cash            ", "Deposit Cash             ",
-                                  "Transfer Balance         ", "Check Balance            ",
+    const string operations[7] = {"Check Balance       ", "View Account History",
+                                  "Withdraw Cash       ", "Deposit Cash        ",
+                                  "Transfer Balance    ", "Check Balance       ",
                                   "Sign Out\n"};
     int operation;
     for (char i = 1; i < 8; ++i) {
@@ -88,4 +103,15 @@ int input_number(const string &msg) {
         printf("Please enter numbers only\n");
         return input_number(msg);
     }
+}
+
+void edit_user_data(const string &username, const string &data, const char index) {
+    users[username_index(username)][index] = data;
+}
+
+void check_balance(const string &username) {
+    printf("Your balance = %s\n", get_user_data(username, 2).c_str());
+    const auto timeNow = time(nullptr);
+    const string msg = "Checked Your Balance at " + string(ctime(&timeNow));
+    edit_user_data(username, get_user_data(username, 3) + msg, 3);
 }
