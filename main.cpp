@@ -12,27 +12,55 @@ int username_index(const string &username);
 
 string get_user_data(const string &username, char index);
 
-int main_menu();
+int main_menu(const string &username);
 
-int input_number(const string &msg);
+int input_number(string &msg);
 
 void edit_user_data(const string &username, const string &data, char index);
 
-void check_balance(const string &username);
+void record(const string &username, const string &msg);
 
 int main() {
-    const string username = login();
+    const string username = login(), constraints = "The amount must be a positive integer and made of the bills 50, 100, 200";
+    string otherUser;
+    int numInput;
     printf("Welcome, %s\n", username.c_str());
     while (true) {
-        const int operation = main_menu();
+        string msg;
+        const int operation = main_menu(username);
         switch (operation) {
             case 0:
-                check_balance(username);
+                printf("Your balance = %s\n", get_user_data(username, 2).c_str());
                 break;
             case 1:
                 printf("%s", get_user_data(username, 3).c_str());
                 break;
             case 2:
+                do {
+                    if (!msg.empty())
+                        printf(constraints.c_str());
+                    numInput = input_number(msg);
+                    msg = "withdraw";
+                } while (numInput % 50 != 0);
+                edit_user_data(username, '-' + to_string(numInput), 2);
+                printf("Successfully withdrew %d pounds", numInput);
+                break;
+            case 3:
+                do {
+                    if (!msg.empty())
+                        printf(constraints.c_str());
+                    numInput = input_number(msg);
+                    msg = "deposit";
+                } while (numInput % 50 != 0);
+                edit_user_data(username, to_string(numInput), 2);
+                printf("Successfully deposited %d pounds", numInput);
+                break;
+            case 4:
+                do {
+                    printf("Enter the username you want to transfer the money to:");
+                    cin >> otherUser;
+                } while (username_index(otherUser) == -1);
+                // the amount
                 break;
             default:
                 printf("Good Bye, %s\n\n", username.c_str());
@@ -72,26 +100,30 @@ string get_user_data(const string &username, const char index) {
     return users[username_index(username)][index];
 }
 
-int main_menu() {
+int main_menu(const string &username) {
     const string operations[7] = {"Check Balance       ", "View Account History",
                                   "Withdraw Cash       ", "Deposit Cash        ",
-                                  "Transfer Balance    ", "Check Balance       ",
-                                  "Sign Out\n"};
+                                  "Transfer Balance    ", "Change PIN          ",
+                                  "Sign Out"};
+    string printingMsg = "the number respective to the operation you want";
     int operation;
     for (char i = 1; i < 8; ++i) {
-        bool index = i % 2;
-        string msg = (index ? "\n" : "");
+        string msg = (i % 2 ? "\n" : "");
         printf("%s[%d] %s", msg.c_str(), i, operations[i - 1].c_str());
     }
+    printf("\n");
     do {
-        operation = input_number("the number respective to the operation you want") - 1;
+        operation = input_number(printingMsg) - 1;
     } while (operation > 6);
+    record(username, operations[operation]);
     return operation;
 }
 
-int input_number(const string &msg) {
+int input_number(string &msg) {
     string input;
     bool isInt = true;
+    if (msg == "withdraw" || msg == "deposit")
+        msg = "the amount you want to " + msg + "(at least 50 pounds and in 50, 100, and 200 bills)";
     printf("Enter %s:", msg.c_str());
     cin >> input;
     for (char digit: input)
@@ -106,12 +138,14 @@ int input_number(const string &msg) {
 }
 
 void edit_user_data(const string &username, const string &data, const char index) {
-    users[username_index(username)][index] = data;
+    if (index == 2)
+        users[username_index(username)][index] = to_string(stoi(get_user_data(username, 2)) + stoi(data));
+    else
+        users[username_index(username)][index] = data;
 }
 
-void check_balance(const string &username) {
-    printf("Your balance = %s\n", get_user_data(username, 2).c_str());
+void record(const string &username, const string &msg) {
     const auto timeNow = time(nullptr);
-    const string msg = "Checked Your Balance at " + string(ctime(&timeNow));
-    edit_user_data(username, get_user_data(username, 3) + msg, 3);
+    const string printingMsg = '"' + msg + "\" at time: " + string(ctime(&timeNow));
+    edit_user_data(username, get_user_data(username, 3) + printingMsg, 3);
 }
