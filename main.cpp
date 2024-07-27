@@ -18,10 +18,10 @@ int input_number(string &msg);
 
 void edit_user_data(const string &username, const string &data, char index);
 
-void record(const string &username, const string &msg);
+void record(const string &username, const int &index = 0, int amount = 0, const string &otherUser = "");
 
 int main() {
-    const string username = login(), constraints = "The amount must be a positive integer and made of bills 50, 100, 200\n";
+    const string username = login(), constraints = "The amount must be of bills 50, 100, 200\n";
     string otherUser;
     int numInput;
     printf("Welcome, %s\n", username.c_str());
@@ -31,33 +31,35 @@ int main() {
         const int operation = main_menu(username);
         switch (operation) {
             case 0:
-                printf("Your balance = %s\n", get_user_data(username, 2).c_str());
+                numInput = stoi(get_user_data(username, 2));
+                record(username, operation, numInput);
                 break;
             case 1:
-                printf("%s", get_user_data(username, 3).c_str());
+                printf(get_user_data(username, 3).c_str());
+                record(username, operation);
                 break;
             case 2:
                 do {
                     if (!msg.empty())
                         printf(constraints.c_str());
+                    msg = "the amount you want to withdraw";
                     numInput = input_number(msg);
                     haveMoney = stoi(get_user_data(username, 2)) >= numInput;
                     if (!haveMoney)
                         printf("The amount you want to withdraw is larger than what you have in your account\n");
-                    msg = "the amount you want to withdraw";
                 } while (numInput % 50 != 0 || !haveMoney);
                 edit_user_data(username, '-' + to_string(numInput), 2);
-                printf("Successfully withdrew %d pounds", numInput);
+                record(username, operation, numInput);
                 break;
             case 3:
                 do {
                     if (!msg.empty())
                         printf(constraints.c_str());
-                    numInput = input_number(msg);
                     msg = "the amount you want to deposit";
+                    numInput = input_number(msg);
                 } while (numInput % 50 != 0);
                 edit_user_data(username, to_string(numInput), 2);
-                printf("Successfully deposited %d pounds", numInput);
+                record(username, operation, numInput);
                 break;
             case 4:
                 msg = "the amount you want to transfer";
@@ -73,6 +75,7 @@ int main() {
                 numInput = input_number(msg);
                 edit_user_data(username, '-' + to_string(numInput), 2);
                 edit_user_data(otherUser, to_string(numInput), 2);
+                record(username, operation, numInput, otherUser);
                 break;
             case 5:
                 do {
@@ -82,11 +85,12 @@ int main() {
                     numInput = input_number(msg);
                     msg = to_string(numInput);
                     const auto msgLength = msg.length();
-                    if (msgLength == 3)
+                    if (msgLength < 4)
                         for (char i = 0; i < 4 - msgLength; ++i)
                             msg = '0' + msg;
                 } while (msg.length() != 4);
                 edit_user_data(username, msg, 1);
+                record(username, operation);
                 break;
             default:
                 printf("Good Bye, %s\n\n", username.c_str());
@@ -143,7 +147,6 @@ int main_menu(const string &username) {
             printf("The choice value must be respective to an operation\n");
         operation = input_number(printingMsg) - 1;
     } while (operation == -1 || operation > 6);
-    record(username, operations[operation]);
     return operation;
 }
 
@@ -170,8 +173,30 @@ void edit_user_data(const string &username, const string &data, const char index
         users[username_index(username)][index] = data;
 }
 
-void record(const string &username, const string &msg) {
-    const auto timeNow = time(nullptr);
-    const string printingMsg = '"' + msg + "\" at: " + string(ctime(&timeNow));
-    edit_user_data(username, get_user_data(username, 3) + printingMsg, 3);
+void record(const string &username, const int &index, const int amount, const string &otherUser) {
+    auto timeNow = time(nullptr);
+    const string time = " at: " + string(ctime(&timeNow));
+    const string amountStr = to_string(amount) + " Pounds";
+    string msg;
+    switch (index) {
+        case 1:
+            msg = "Viewed your account history" + time;
+            break;
+        case 2:
+            msg = "Withdrew " + amountStr + " from your account" + time;
+            break;
+        case 3:
+            msg = "Deposited " + amountStr + " to your account" + time;
+            break;
+        case 4:
+            msg = "Transferred " + amountStr + " from your account balance to " + otherUser + time;
+            break;
+        case 5:
+            msg = "Changed your PIN" + time;
+            break;
+        default:
+            msg = "Checked balance and it was: " + amountStr + time;
+    }
+    printf(msg.c_str());
+    edit_user_data(username, get_user_data(username, 3) + msg, 3);
 }
