@@ -25,7 +25,7 @@ void withdraw_cash(const string &username);
 void deposit_cash(const string &username);
 
 int main() {
-    const string username = login(), constraints = "The amount must be of bills 50, 100, 200\n";
+    const string username = login();
     string otherUser;
     int numInput;
     printf("Welcome, %s\n", username.c_str());
