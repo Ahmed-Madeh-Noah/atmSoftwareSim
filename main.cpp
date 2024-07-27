@@ -22,6 +22,8 @@ void record(const string &username, const int &index = 0, int amount = 0, const 
 
 void withdraw_cash(const string &username);
 
+void deposit_cash(const string &username);
+
 int main() {
     const string username = login(), constraints = "The amount must be of bills 50, 100, 200\n";
     string otherUser;
@@ -45,13 +47,7 @@ int main() {
                 record(username, operation, numInput);
                 break;
             case 3:
-                do {
-                    if (!msg.empty())
-                        printf(constraints.c_str());
-                    msg = "the amount you want to deposit";
-                    numInput = input_number(msg);
-                } while (numInput % 50 != 0);
-                edit_user_data(username, to_string(numInput), 2);
+                deposit_cash(username);
                 record(username, operation, numInput);
                 break;
             case 4:
@@ -208,4 +204,16 @@ void withdraw_cash(const string &username) {
             printf("The amount you want to withdraw is larger than what you have in your account\n");
     } while (numInput % 50 != 0 || !haveMoney);
     edit_user_data(username, '-' + to_string(numInput), 2);
+}
+
+void deposit_cash(const string &username) {
+    string msg;
+    int numInput;
+    do {
+        if (!msg.empty())
+            printf("The amount must be of bills 50, 100, 200\n");
+        msg = "the amount you want to deposit";
+        numInput = input_number(msg);
+    } while (numInput % 50 != 0);
+    edit_user_data(username, to_string(numInput), 2);
 }
