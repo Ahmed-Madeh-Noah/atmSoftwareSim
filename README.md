@@ -5,7 +5,7 @@ ___
 * This project's purpose is to simulate some ATM functions in some
   constrained environment
 * This project is created to be submitted as my semester project in the
-  structural programming subject in my first semester of my freshman year
+  structural programming subject in the first semester of my freshman year
   of uni
 
 ___

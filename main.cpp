@@ -12,13 +12,15 @@ int username_index(const string &username);
 
 string get_user_data(const string &username, char index);
 
-int main_menu(const string &username);
+int main_menu();
 
 int input_number(string &msg);
 
 void edit_user_data(const string &username, const string &data, char index);
 
 void record(const string &username, const int &index = 0, int amount = 0, const string &otherUser = "");
+
+void withdraw_cash(const string &username);
 
 int main() {
     const string username = login(), constraints = "The amount must be of bills 50, 100, 200\n";
@@ -27,8 +29,8 @@ int main() {
     printf("Welcome, %s\n", username.c_str());
     while (true) {
         string msg;
-        bool haveMoney = true;
-        const int operation = main_menu(username);
+        bool haveMoney;
+        const int operation = main_menu();
         switch (operation) {
             case 0:
                 numInput = stoi(get_user_data(username, 2));
@@ -39,16 +41,7 @@ int main() {
                 record(username, operation);
                 break;
             case 2:
-                do {
-                    if (!msg.empty())
-                        printf(constraints.c_str());
-                    msg = "the amount you want to withdraw";
-                    numInput = input_number(msg);
-                    haveMoney = stoi(get_user_data(username, 2)) >= numInput;
-                    if (!haveMoney)
-                        printf("The amount you want to withdraw is larger than what you have in your account\n");
-                } while (numInput % 50 != 0 || !haveMoney);
-                edit_user_data(username, '-' + to_string(numInput), 2);
+                withdraw_cash(username);
                 record(username, operation, numInput);
                 break;
             case 3:
@@ -130,7 +123,7 @@ string get_user_data(const string &username, const char index) {
     return users[username_index(username)][index];
 }
 
-int main_menu(const string &username) {
+int main_menu() {
     const string operations[7] = {"Check Balance       ", "View Account History",
                                   "Withdraw Cash       ", "Deposit Cash        ",
                                   "Transfer Balance    ", "Change PIN          ",
@@ -199,4 +192,20 @@ void record(const string &username, const int &index, const int amount, const st
     }
     printf(msg.c_str());
     edit_user_data(username, get_user_data(username, 3) + msg, 3);
+}
+
+void withdraw_cash(const string &username) {
+    string msg;
+    int numInput;
+    bool haveMoney;
+    do {
+        if (!msg.empty())
+            printf("The amount must be of bills 50, 100, 200\n");
+        msg = "the amount you want to withdraw";
+        numInput = input_number(msg);
+        haveMoney = stoi(get_user_data(username, 2)) >= numInput;
+        if (!haveMoney)
+            printf("The amount you want to withdraw is larger than what you have in your account\n");
+    } while (numInput % 50 != 0 || !haveMoney);
+    edit_user_data(username, '-' + to_string(numInput), 2);
 }
