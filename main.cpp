@@ -33,7 +33,6 @@ int main() {
     printf("Welcome, %s\n", username.c_str());
     while (true) {
         string msg;
-        bool haveMoney;
         const int operation = main_menu();
         switch (operation) {
             case 0:
