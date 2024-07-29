@@ -26,6 +26,8 @@ void deposit_cash(const string &username);
 
 void transfer_balance(const string &username);
 
+void change_pin(const string &username);
+
 int main() {
     const string username = login();
     string otherUser;
@@ -56,18 +58,7 @@ int main() {
                 record(username, operation, numInput, otherUser);
                 break;
             case 5:
-                do {
-                    if (!msg.empty())
-                        printf("Make sure the PIN consists of only 4 digits");
-                    msg = "your new PIN";
-                    numInput = input_number(msg);
-                    msg = to_string(numInput);
-                    const auto msgLength = msg.length();
-                    if (msgLength < 4)
-                        for (char i = 0; i < 4 - msgLength; ++i)
-                            msg = '0' + msg;
-                } while (msg.length() != 4);
-                edit_user_data(username, msg, 1);
+                change_pin(username);
                 record(username, operation);
                 break;
             default:
@@ -223,4 +214,21 @@ void transfer_balance(const string &username) {
     } while (username_index(otherUser) == -1 || username == otherUser || !haveMoney);
     edit_user_data(username, '-' + to_string(numInput), 2);
     edit_user_data(otherUser, to_string(numInput), 2);
+}
+
+void change_pin(const string &username) {
+    string msg;
+    int numInput;
+    do {
+        if (!msg.empty())
+            printf("Make sure the PIN consists of only 4 digits");
+        msg = "your new PIN";
+        numInput = input_number(msg);
+        msg = to_string(numInput);
+        const auto msgLength = msg.length();
+        if (msgLength < 4)
+            for (char i = 0; i < 4 - msgLength; ++i)
+                msg = '0' + msg;
+    } while (msg.length() != 4);
+    edit_user_data(username, msg, 1);
 }
