@@ -24,6 +24,8 @@ void withdraw_cash(const string &username);
 
 void deposit_cash(const string &username);
 
+void transfer_balance(const string &username);
+
 int main() {
     const string username = login();
     string otherUser;
@@ -51,19 +53,7 @@ int main() {
                 record(username, operation, numInput);
                 break;
             case 4:
-                msg = "the amount you want to transfer";
-                do {
-                    printf("Enter the username you want to transfer the money to:");
-                    cin >> otherUser;
-                    haveMoney = stoi(get_user_data(username, 2)) >= numInput;
-                    if (!haveMoney)
-                        printf("The amount you want to transfer is larger than what you have in your account\n");
-                    if (username == otherUser)
-                        printf("You can not transfer money to the same account\n");
-                } while (username_index(otherUser) == -1 || username == otherUser || !haveMoney);
-                numInput = input_number(msg);
-                edit_user_data(username, '-' + to_string(numInput), 2);
-                edit_user_data(otherUser, to_string(numInput), 2);
+                transfer_balance(username);
                 record(username, operation, numInput, otherUser);
                 break;
             case 5:
@@ -216,4 +206,22 @@ void deposit_cash(const string &username) {
         numInput = input_number(msg);
     } while (numInput % 50 != 0);
     edit_user_data(username, to_string(numInput), 2);
+}
+
+void transfer_balance(const string &username) {
+    string otherUser, msg = "the amount you want to transfer";
+    int numInput;
+    bool haveMoney;
+    do {
+        printf("Enter the username you want to transfer the money to:");
+        cin >> otherUser;
+        if (username == otherUser)
+            printf("You can not transfer money to the same account\n");
+        numInput = input_number(msg);
+        haveMoney = stoi(get_user_data(username, 2)) >= numInput;
+        if (!haveMoney)
+            printf("The amount you want to transfer is larger than what you have in your account\n");
+    } while (username_index(otherUser) == -1 || username == otherUser || !haveMoney);
+    edit_user_data(username, '-' + to_string(numInput), 2);
+    edit_user_data(otherUser, to_string(numInput), 2);
 }
