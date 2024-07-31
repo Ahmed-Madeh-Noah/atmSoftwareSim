@@ -70,13 +70,13 @@ int main() {
 
 string login() {
     string username, password;
-    char counter = 0;
+    int counter = 0;
     do {
         printf("Enter your username:");
         cin >> username;
     } while (username_index(username) == -1);
     do {
-        printf("You have %d trial/s to\nEnter your password:", 3 - counter);
+        printf("You have %d to enter your password\nEnter your password:", 3 - counter);
         cin >> password;
         ++counter;
         if (password == get_user_data(username, 1))
