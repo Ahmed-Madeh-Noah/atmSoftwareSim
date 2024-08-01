@@ -11,10 +11,10 @@ ___
 ___
 The functions to be simulated are:
 
-1. Sign In
-2. Balance Check
+1. Signing In
+2. Balance Checking
 3. Viewing Transaction History
 4. Cash Withdrawal
-5. Cash Deposit
-6. Balance Transfer
-7. Change PIN
+5. Cash Depositing
+6. Balance Transferring
+7. Changing PIN
