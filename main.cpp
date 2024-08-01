@@ -14,7 +14,7 @@ string get_user_data(const string &username, char index);
 
 int main_menu();
 
-int input_number(string &msg);
+int input_number(const string &msg);
 
 void edit_user_data(const string &username, const string &data, char index);
 
@@ -34,7 +34,6 @@ int main() {
     int numInput;
     printf("Welcome, %s\n", username.c_str());
     while (true) {
-        string msg;
         const int operation = main_menu();
         switch (operation) {
             case 0:
@@ -69,14 +68,15 @@ int main() {
 }
 
 string login() {
-    string username, password;
-    int counter = 0;
+    string username;
     do {
         printf("Enter your username:");
         cin >> username;
     } while (username_index(username) == -1);
+    int counter = 0;
     do {
-        printf("You have %d to enter your password\nEnter your password:", 3 - counter);
+        string password;
+        printf("You have %d trials to enter your password\nEnter your password:", 3 - counter);
         cin >> password;
         ++counter;
         if (password == get_user_data(username, 1))
@@ -103,36 +103,31 @@ int main_menu() {
     const string operations[7] = {"Check Balance       ", "View Account History",
                                   "Withdraw Cash       ", "Deposit Cash        ",
                                   "Transfer Balance    ", "Change PIN          ",
-                                  "Sign Out"};
-    string printingMsg = "the number respective to the operation you want";
-    int operation = 0;
-    for (char i = 1; i < 8; ++i) {
-        string msg = (i % 2 ? "\n" : "");
-        printf("%s[%d] %s", msg.c_str(), i, operations[i - 1].c_str());
-    }
-    printf("\n");
+                                  "Sign Out\n"};
+    for (int i = 1; i < 8; ++i)
+        printf("%c[%d]%s", i % 2 ? '\n' : ' ', i, operations[i - 1].c_str());
+    int chosenOperation = 0;
     do {
-        if (operation == -1 || operation > 6)
+        if (chosenOperation < 0 || chosenOperation > 6)
             printf("The choice value must be respective to an operation\n");
-        operation = input_number(printingMsg) - 1;
-    } while (operation == -1 || operation > 6);
-    return operation;
+        chosenOperation = input_number("the number respective to the operation you want") - 1;
+    } while (chosenOperation < 0 || chosenOperation > 6);
+    return chosenOperation;
 }
 
-int input_number(string &msg) {
+int input_number(const string &msg) {
     string input;
-    bool isInt = true;
     printf("Enter %s:", msg.c_str());
     cin >> input;
+    bool isInt = true;
     for (char digit: input)
         if (!isdigit(digit))
             isInt = false;
     if (isInt)
         return stoi(input);
-    else {
-        printf("Please enter numbers only\n");
-        return input_number(msg);
-    }
+    else
+        printf("Only integers are allowed here, positive integers\n");
+    return input_number(msg);
 }
 
 void edit_user_data(const string &username, const string &data, const char index) {
