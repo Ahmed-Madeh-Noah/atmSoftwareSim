@@ -16,9 +16,9 @@ int main_menu();
 
 int input_number(const string &msg);
 
-void edit_user_data(const string &username, const string &data, char index);
+void record(const string &username, const int &operation, int amount, const string &otherUser);
 
-void record(const string &username, const int &index = 0, int amount = 0, const string &otherUser = "");
+void edit_user_data(const string &username, const string &data, char index);
 
 void withdraw_cash(const string &username);
 
@@ -30,40 +30,41 @@ void change_pin(const string &username);
 
 int main() {
     const string username = login();
-    string otherUser;
-    int numInput;
     printf("Welcome, %s\n", username.c_str());
     while (true) {
         const int operation = main_menu();
+        int amount = 0;
+        string otherUser;
         switch (operation) {
             case 0:
-                numInput = stoi(get_user_data(username, 2));
-                record(username, operation, numInput);
+                amount = stoi(get_user_data(username, 2));
+                record(username, operation, amount, otherUser);
                 break;
             case 1:
                 printf(get_user_data(username, 3).c_str());
-                record(username, operation);
+                record(username, operation, amount, otherUser);
                 break;
             case 2:
                 withdraw_cash(username);
-                record(username, operation, numInput);
+                record(username, operation, amount, otherUser);
                 break;
             case 3:
                 deposit_cash(username);
-                record(username, operation, numInput);
+                record(username, operation, amount, otherUser);
                 break;
             case 4:
                 transfer_balance(username);
-                record(username, operation, numInput, otherUser);
+                record(username, operation, amount, otherUser);
                 break;
             case 5:
                 change_pin(username);
-                record(username, operation);
+                record(username, operation, amount, otherUser);
                 break;
             default:
                 printf("Good Bye, %s\n\n", username.c_str());
                 return main();
         }
+        record(username, operation, amount, otherUser);
     }
 }
 
@@ -130,19 +131,12 @@ int input_number(const string &msg) {
     return input_number(msg);
 }
 
-void edit_user_data(const string &username, const string &data, const char index) {
-    if (index == 2)
-        users[username_index(username)][index] = to_string(stoi(get_user_data(username, 2)) + stoi(data));
-    else
-        users[username_index(username)][index] = data;
-}
-
-void record(const string &username, const int &index, const int amount, const string &otherUser) {
+void record(const string &username, const int &operation, const int amount, const string &otherUser) {
     auto timeNow = time(nullptr);
     const string time = " at: " + string(ctime(&timeNow));
     const string amountStr = to_string(amount) + " Pounds";
     string msg;
-    switch (index) {
+    switch (operation) {
         case 1:
             msg = "Viewed your account history" + time;
             break;
@@ -163,6 +157,13 @@ void record(const string &username, const int &index, const int amount, const st
     }
     printf(msg.c_str());
     edit_user_data(username, get_user_data(username, 3) + msg, 3);
+}
+
+void edit_user_data(const string &username, const string &data, const char index) {
+    if (index == 2)
+        users[username_index(username)][index] = to_string(stoi(get_user_data(username, 2)) + stoi(data));
+    else
+        users[username_index(username)][index] = data;
 }
 
 void withdraw_cash(const string &username) {
