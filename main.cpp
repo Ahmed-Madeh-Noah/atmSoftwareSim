@@ -18,6 +18,8 @@ int input_number(const string &msg);
 
 void record(const string &username, const int &operation, int amount, const string &otherUser);
 
+string get_time();
+
 void edit_user_data(const string &username, const string &data, char index);
 
 void withdraw_cash(const string &username);
@@ -132,8 +134,7 @@ int input_number(const string &msg) {
 }
 
 void record(const string &username, const int &operation, const int amount, const string &otherUser) {
-    auto timeNow = time(nullptr);
-    const string time = " at: " + string(ctime(&timeNow));
+    const string time = get_time();
     const string amountStr = to_string(amount) + " Pounds";
     string msg;
     switch (operation) {
@@ -157,6 +158,12 @@ void record(const string &username, const int &operation, const int amount, cons
     }
     printf(msg.c_str());
     edit_user_data(username, get_user_data(username, 3) + msg, 3);
+}
+
+string get_time() {
+    time_t timeSeconds = time(nullptr);
+    const string time = " at: " + string(ctime(&timeSeconds));
+    return time;
 }
 
 void edit_user_data(const string &username, const string &data, const char index) {
