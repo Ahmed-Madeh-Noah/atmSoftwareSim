@@ -40,27 +40,21 @@ int main() {
         switch (operation) {
             case 0:
                 amount = stoi(get_user_data(username, 2));
-                record(username, operation, amount, otherUser);
                 break;
             case 1:
                 printf(get_user_data(username, 3).c_str());
-                record(username, operation, amount, otherUser);
                 break;
             case 2:
                 withdraw_cash(username);
-                record(username, operation, amount, otherUser);
                 break;
             case 3:
                 deposit_cash(username);
-                record(username, operation, amount, otherUser);
                 break;
             case 4:
                 transfer_balance(username);
-                record(username, operation, amount, otherUser);
                 break;
             case 5:
                 change_pin(username);
-                record(username, operation, amount, otherUser);
                 break;
             default:
                 printf("Good Bye, %s\n\n", username.c_str());
