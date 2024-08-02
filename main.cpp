@@ -138,6 +138,9 @@ void record(const string &username, const int &operation, const int amount, cons
     const string amountStr = to_string(amount) + " Pounds";
     string msg;
     switch (operation) {
+        case 0:
+            msg = "Checked balance and it was: " + amountStr + time;
+            break;
         case 1:
             msg = "Viewed your account history" + time;
             break;
@@ -150,11 +153,8 @@ void record(const string &username, const int &operation, const int amount, cons
         case 4:
             msg = "Transferred " + amountStr + " from your account balance to " + otherUser + time;
             break;
-        case 5:
-            msg = "Changed your PIN" + time;
-            break;
         default:
-            msg = "Checked balance and it was: " + amountStr + time;
+            msg = "Changed your PIN" + time;
     }
     printf(msg.c_str());
     edit_user_data(username, get_user_data(username, 3) + msg, 3);
