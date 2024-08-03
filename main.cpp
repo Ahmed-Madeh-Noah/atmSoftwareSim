@@ -22,7 +22,7 @@ string get_time();
 
 void edit_user_data(const string &username, const string &data, char index);
 
-void withdraw_cash(const string &username);
+int withdraw_cash(const string &username);
 
 void deposit_cash(const string &username);
 
@@ -45,7 +45,7 @@ int main() {
                 printf(get_user_data(username, 3).c_str());
                 break;
             case 2:
-                withdraw_cash(username);
+                amount = withdraw_cash(username);
                 break;
             case 3:
                 deposit_cash(username);
@@ -167,7 +167,7 @@ void edit_user_data(const string &username, const string &data, const char index
         users[username_index(username)][index] = data;
 }
 
-void withdraw_cash(const string &username) {
+int withdraw_cash(const string &username) {
     string msg;
     int numInput;
     bool haveMoney;
@@ -181,6 +181,7 @@ void withdraw_cash(const string &username) {
             printf("The amount you want to withdraw is larger than what you have in your account\n");
     } while (numInput % 50 != 0 || !haveMoney);
     edit_user_data(username, '-' + to_string(numInput), 2);
+    return -1 * numInput;
 }
 
 void deposit_cash(const string &username) {
@@ -225,7 +226,7 @@ void change_pin(const string &username) {
         const auto msgLength = msg.length();
         if (msgLength < 4)
             for (char i = 0; i < 4 - msgLength; ++i)
-                msg = '0' + msg;
+                msg.insert(0, "0");
     } while (msg.length() != 4);
     edit_user_data(username, msg, 1);
 }
