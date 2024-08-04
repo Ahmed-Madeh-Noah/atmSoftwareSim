@@ -168,20 +168,20 @@ void edit_user_data(const string &username, const string &data, const char index
 }
 
 int withdraw_cash(const string &username) {
-    string msg;
-    int numInput;
-    bool haveMoney;
+    int withdrawalAmount;
+    bool okConditions;
     do {
-        if (!msg.empty())
+        withdrawalAmount = input_number("The amount you want to withdraw");
+        const bool rightBills = withdrawalAmount != 0 && withdrawalAmount % 50 == 0;
+        const bool haveMoney = stoi(get_user_data(username, 2)) >= withdrawalAmount;
+        if (!rightBills)
             printf("The amount must be of bills 50, 100, 200\n");
-        msg = "the amount you want to withdraw";
-        numInput = input_number(msg);
-        haveMoney = stoi(get_user_data(username, 2)) >= numInput;
         if (!haveMoney)
             printf("The amount you want to withdraw is larger than what you have in your account\n");
-    } while (numInput % 50 != 0 || !haveMoney);
-    edit_user_data(username, '-' + to_string(numInput), 2);
-    return -1 * numInput;
+        okConditions = rightBills && haveMoney;
+    } while (!okConditions);
+    edit_user_data(username, to_string(-1 * withdrawalAmount), 2);
+    return withdrawalAmount;
 }
 
 void deposit_cash(const string &username) {
