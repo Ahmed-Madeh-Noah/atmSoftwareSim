@@ -151,7 +151,7 @@ void record(const string &username, const int &operation, const int amount, cons
             msg = "Changed your PIN" + time;
     }
     printf(msg.c_str());
-    edit_user_data(username, get_user_data(username, 3) + msg, 3);
+    edit_user_data(username, msg, 3);
 }
 
 string get_time() {
@@ -162,7 +162,9 @@ string get_time() {
 
 void edit_user_data(const string &username, const string &data, const char index) {
     if (index == 2)
-        users[username_index(username)][index] = to_string(stoi(get_user_data(username, 2)) + stoi(data));
+        users[username_index(username)][2] = to_string(stoi(get_user_data(username, 2)) + stoi(data));
+    else if (index == 3)
+        users[username_index(username)][3] += data;
     else
         users[username_index(username)][index] = data;
 }
