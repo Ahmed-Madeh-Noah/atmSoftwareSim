@@ -32,7 +32,7 @@ void change_pin(const string &username);
 
 int main() {
     const string username = login();
-    printf("Welcome, %s\n", username.c_str());
+    printf("Welcome, %s", username.c_str());
     while (true) {
         const int operation = main_menu();
         int amount = 0;
@@ -156,7 +156,7 @@ void record(const string &username, const int &operation, const int amount, cons
 
 string get_time() {
     time_t timeSeconds = time(nullptr);
-    const string time = " at: " + string(ctime(&timeSeconds));
+    const string time = " at " + string(ctime(&timeSeconds));
     return time;
 }
 
@@ -174,12 +174,12 @@ int withdraw_cash(const string &username) {
     bool okConditions;
     do {
         withdrawalAmount = input_number("The amount you want to withdraw");
-        const bool rightBills = withdrawalAmount != 0 && withdrawalAmount % 50 == 0;
         const bool haveMoney = stoi(get_user_data(username, 2)) >= withdrawalAmount;
-        if (!rightBills)
-            printf("The amount must be of bills 50, 100, 200\n");
+        const bool rightBills = withdrawalAmount != 0 && withdrawalAmount % 50 == 0;
         if (!haveMoney)
             printf("The amount you want to withdraw is larger than what you have in your account\n");
+        if (!rightBills)
+            printf("The amount must be of bills 50, 100, 200\n");
         okConditions = rightBills && haveMoney;
     } while (!okConditions);
     edit_user_data(username, to_string(-1 * withdrawalAmount), 2);
