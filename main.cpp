@@ -24,7 +24,7 @@ void edit_user_data(const string &username, const string &data, char index);
 
 int withdraw_cash(const string &username);
 
-void deposit_cash(const string &username);
+int deposit_cash(const string &username);
 
 void transfer_balance(const string &username);
 
@@ -48,7 +48,7 @@ int main() {
                 amount = withdraw_cash(username);
                 break;
             case 3:
-                deposit_cash(username);
+                amount = deposit_cash(username);
                 break;
             case 4:
                 transfer_balance(username);
@@ -184,16 +184,17 @@ int withdraw_cash(const string &username) {
     return withdrawalAmount;
 }
 
-void deposit_cash(const string &username) {
-    string msg;
-    int numInput;
+int deposit_cash(const string &username) {
+    int depositAmount;
+    bool rightBills;
     do {
-        if (!msg.empty())
+        depositAmount = input_number("The amount you want to withdraw");
+        rightBills = depositAmount != 0 && depositAmount % 50 == 0;
+        if (!rightBills)
             printf("The amount must be of bills 50, 100, 200\n");
-        msg = "the amount you want to deposit";
-        numInput = input_number(msg);
-    } while (numInput % 50 != 0);
-    edit_user_data(username, to_string(numInput), 2);
+    } while (!rightBills);
+    edit_user_data(username, to_string(depositAmount), 2);
+    return depositAmount;
 }
 
 void transfer_balance(const string &username) {
