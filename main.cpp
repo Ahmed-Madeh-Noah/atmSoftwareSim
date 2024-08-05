@@ -26,7 +26,7 @@ int withdraw_cash(const string &username);
 
 int deposit_cash(const string &username);
 
-int transfer_balance(const string &username);
+string transfer_balance(const string &username);
 
 void change_pin(const string &username);
 
@@ -37,6 +37,7 @@ int main() {
         const int operation = main_menu();
         int amount = 0;
         string otherUser;
+        size_t separator;
         switch (operation) {
             case 0:
                 amount = stoi(get_user_data(username, 2));
@@ -51,7 +52,10 @@ int main() {
                 amount = deposit_cash(username);
                 break;
             case 4:
-                amount = transfer_balance(username);
+                otherUser = transfer_balance(username);
+                separator = otherUser.find('|');
+                amount = stoi(otherUser.substr(0, separator));
+                otherUser = otherUser.substr(separator + 1);
                 break;
             case 5:
                 change_pin(username);
@@ -199,7 +203,7 @@ int deposit_cash(const string &username) {
     return depositAmount;
 }
 
-int transfer_balance(const string &username) {
+string transfer_balance(const string &username) {
     string otherUser;
     bool okConditions;
     do {
@@ -223,7 +227,7 @@ int transfer_balance(const string &username) {
     } while (!okConditions);
     edit_user_data(username, to_string(-1 * transferAmount), 2);
     edit_user_data(otherUser, to_string(transferAmount), 2);
-    return transferAmount;
+    return to_string(transferAmount) + '|' + otherUser;
 }
 
 void change_pin(const string &username) {
