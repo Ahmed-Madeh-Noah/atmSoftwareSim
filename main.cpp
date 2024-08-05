@@ -26,7 +26,7 @@ int withdraw_cash(const string &username);
 
 int deposit_cash(const string &username);
 
-void transfer_balance(const string &username);
+int transfer_balance(const string &username);
 
 void change_pin(const string &username);
 
@@ -51,7 +51,7 @@ int main() {
                 amount = deposit_cash(username);
                 break;
             case 4:
-                transfer_balance(username);
+                amount = transfer_balance(username);
                 break;
             case 5:
                 change_pin(username);
@@ -199,22 +199,31 @@ int deposit_cash(const string &username) {
     return depositAmount;
 }
 
-void transfer_balance(const string &username) {
-    string otherUser, msg = "the amount you want to transfer";
-    int numInput;
-    bool haveMoney;
+int transfer_balance(const string &username) {
+    string otherUser;
+    bool okConditions;
     do {
-        printf("Enter the username you want to transfer the money to:");
+        printf("Enter the username of the account that you want to transfer to:");
         cin >> otherUser;
-        if (username == otherUser)
-            printf("You can not transfer money to the same account\n");
-        numInput = input_number(msg);
-        haveMoney = stoi(get_user_data(username, 2)) >= numInput;
+        const bool notSameUser = username != otherUser;
+        const bool userPresent = username_index(otherUser) != -1;
+        if (!notSameUser)
+            printf("You can not transfer money to yourself\n");
+        if (!userPresent)
+            printf("Username does not exist\n");
+        okConditions = notSameUser && userPresent;
+    } while (!okConditions);
+    int transferAmount;
+    do {
+        transferAmount = input_number("the amount you want to transfer");
+        const bool haveMoney = stoi(get_user_data(username, 2)) >= transferAmount;
         if (!haveMoney)
-            printf("The amount you want to transfer is larger than what you have in your account\n");
-    } while (username_index(otherUser) == -1 || username == otherUser || !haveMoney);
-    edit_user_data(username, '-' + to_string(numInput), 2);
-    edit_user_data(otherUser, to_string(numInput), 2);
+            printf("The amount you want to withdraw is larger than what you have in your account\n");
+        okConditions = haveMoney;
+    } while (!okConditions);
+    edit_user_data(username, to_string(-1 * transferAmount), 2);
+    edit_user_data(otherUser, to_string(transferAmount), 2);
+    return transferAmount;
 }
 
 void change_pin(const string &username) {
