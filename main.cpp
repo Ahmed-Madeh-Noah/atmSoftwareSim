@@ -173,7 +173,7 @@ int withdraw_cash(const string &username) {
     int withdrawalAmount;
     bool okConditions;
     do {
-        withdrawalAmount = input_number("The amount you want to withdraw");
+        withdrawalAmount = input_number("the amount you want to withdraw");
         const bool haveMoney = stoi(get_user_data(username, 2)) >= withdrawalAmount;
         const bool rightBills = withdrawalAmount != 0 && withdrawalAmount % 50 == 0;
         if (!haveMoney)
@@ -190,7 +190,7 @@ int deposit_cash(const string &username) {
     int depositAmount;
     bool rightBills;
     do {
-        depositAmount = input_number("The amount you want to withdraw");
+        depositAmount = input_number("the amount you want to withdraw");
         rightBills = depositAmount != 0 && depositAmount % 50 == 0;
         if (!rightBills)
             printf("The amount must be of bills 50, 100, 200\n");
