@@ -231,18 +231,10 @@ string transfer_balance(const string &username) {
 }
 
 void change_pin(const string &username) {
-    string msg;
-    int numInput;
-    do {
-        if (!msg.empty())
-            printf("Make sure the PIN consists of only 4 digits");
-        msg = "your new PIN";
-        numInput = input_number(msg);
-        msg = to_string(numInput);
-        const auto msgLength = msg.length();
-        if (msgLength < 4)
-            for (char i = 0; i < 4 - msgLength; ++i)
-                msg.insert(0, "0");
-    } while (msg.length() != 4);
-    edit_user_data(username, msg, 1);
+    string pin = to_string(input_number("the new PIN"));
+    size_t pinLength = pin.length();
+    if (pinLength < 4)
+        for (int i = 0; i <= 5 - pinLength; ++i)
+            pin.insert(0, "0");
+    edit_user_data(username, pin, 1);
 }
