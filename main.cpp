@@ -30,6 +30,8 @@ string transfer_balance(const string &username);
 
 void change_pin(const string &username);
 
+bool time_count_flags();
+
 int main() {
     const string username = login();
     printf("Welcome, %s", username.c_str());
@@ -237,4 +239,8 @@ void change_pin(const string &username) {
         for (int i = 0; i <= 5 - pinLength; ++i)
             pin.insert(0, "0");
     edit_user_data(username, pin, 1);
+}
+
+bool time_count_flags() {
+    return false;
 }
