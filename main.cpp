@@ -30,7 +30,7 @@ string transfer_balance(const string &username);
 
 void change_pin(const string &username);
 
-bool time_count_flags();
+bool time_count_flags(bool firstTime = false);
 
 int main() {
     const string username = login();
@@ -241,6 +241,15 @@ void change_pin(const string &username) {
     edit_user_data(username, pin, 1);
 }
 
-bool time_count_flags() {
-    return false;
+bool time_count_flags(bool firstTime) {
+    static int count = 0;
+    static time_t lastTime = time(nullptr);
+    time_t timeNow = time(nullptr);
+    if (!firstTime) {
+        if (count > 2 || timeNow - lastTime > 10)
+            return false;
+        lastTime = timeNow;
+        ++count;
+    }
+    return true;
 }
